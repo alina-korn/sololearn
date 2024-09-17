@@ -1,0 +1,16 @@
+title: "Мой сайт"
+email: alinakornilovagit@gmail.com
+description: "Jekyll на GitHub Pages."
+twitter_username: none
+github_username: none
+
+# Навигация по сайту
+collections:
+  posts:
+    output: true
+
+# Поддержка Markdown и плагины
+markdown: kramdown
+plugins:
+  - jekyll-feed # добавляет RSS ленты
+  - jekyll-sitemap # создаёт sitemap.xml
