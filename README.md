@@ -26,7 +26,7 @@ function logMessage() {
 
 
 <mark>JavaScript</mark>: Мультипарадигменный язык программирования.  
-\ <mark> JavaScript \</mark>: Мультипарадигменный язык программирования.
+<mark> \ JavaScript \</mark>: Мультипарадигменный язык программирования.
 
 
 Смайлик: :smile:  
