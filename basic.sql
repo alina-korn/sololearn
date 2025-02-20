@@ -23,3 +23,23 @@ FROM Customers
 чтобы получить желаемый результат:
 SELECT CONCAT(firstname, ' ', lastname) AS name
 FROM Customers 
+
+Создать запрос к таблице Players, который объединяет firstname с age 
+в столбце под названием nickname, 
+и упорядочивает результаты по столбцу points.
+SELECT CONCAT (firstname, age) AS nickname
+FROM Players
+ORDER BY points DESC
+
+Функция LOWER преобразует текст в предоставленной колонке в нижний регистр.
+и другие, требуют использования круглых скобок для обозначения аргументов, 
+которые передаются в функцию.
+В SQL функции, такие как LOWER(), UPPER(), SUM(), AVG()
+SELECT LOWER(firstname) FROM Customers
+
+
+Функция SUBSTRING позволяет извлекать часть текста из столбца.
+Она принимает начальную позицию и количество символов,
+которые мы хотим извлечь.
+SELECT SUBSTRING(firstname, 1, 3)
+FROM Customers
