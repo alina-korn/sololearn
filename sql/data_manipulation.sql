@@ -110,4 +110,10 @@ Mинимальное и максимальное значения возрас�
 SELECT MAX(age) FROM Customers;
 SELECT MIN(age) FROM Customers;
 
-
+Выбрать все столбцы компании с максимальным числом доходов.
+SELECT *
+FROM Companies
+WHERE revenue = (
+    SELECT MAX(revenue)
+    FROM Companies
+);
