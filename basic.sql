@@ -12,7 +12,7 @@ FROM employees
 ORDER BY salary DESC
 LIMIT 3 OFFSET 2
 
-
+Функции работы со строками
 Функция CONCAT позволяет объединить текст из нескольких столбцов в один.
 SELECT CONCAT(firstname, lastname) AS name
 FROM Customers 
