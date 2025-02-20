@@ -1,0 +1,4 @@
+SELECT * FROM Customers
+WHERE age IS NOT NULL
+ORDER BY age DESC
+LIMIT 2
