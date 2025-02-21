@@ -369,3 +369,30 @@ Bы можете иметь несколько значений NULL в уник
 первичный ключ.
 Ограничение UNIQUE используется для обеспечения уникальности 
 значений в столбце.
+
+Викторина
+Создайте таблицу с автоматически увеличиваемой колонкой под 
+названием id, которая является первичным ключом.
+CREATE TABLE Users (
+id int AUTO_INCREMENT, 
+name varchar(255) NOT NULL, 
+PRIMARY KEY (id)
+);
+
+У таблицы НЕ может быть несколько первичных ключей.
+
+Создать таблицу 'Users' с первичным ключом в столбце id 
+и внешним ключом в столбце 'account_id', 
+ссылающимся на столбец id таблицы Accounts.
+CREATE TABLE Users (
+id int NOT NULL AUTO_INCREMENT,
+name varchar(255) NOT NULL,
+account_id int NOT NULL,
+PRIMARY KEY (id),
+FOREIGN KEY (account_id)
+REFERENCES Accounts (id)
+);
+
+Работа с данными
+Несколько таблиц
+
