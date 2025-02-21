@@ -204,3 +204,34 @@ FROM Hotels
  - Выражение CASE должно закрываться ключевым словом END
 
 
+Викторина первого модуля
+Рассчитать среднее значение столбца цен для домов, город для которых установлен как 'Лондон'.
+SELECT AVG(price)
+FROM Houses
+WHERE city = 'London'
+  
+У вас есть таблица Cars с колонкой transmission, 
+которая является числовой: 1 для Manual и 2 для Automatic. 
+Cоздать запрос, который выбирает соответствующее текстовое
+значение колонки transmission.
+SELECT name, CASE
+  WHEN transmission = 1 THEN 'Manual'
+  ELSE 'Automatic'
+END AS 'transmission'
+FROM Cars
+
+Вы хотите создать хэштеги из текста в таблице под названием Posts.
+Напишите запрос, чтобы заменить все пробелы на '_' подчеркивания в текстовом столбце 
+таблицы Posts и добавить символ '#' в начале. Назовите новую колонку "tag".
+SELECT CONCAT('#', REPLACE(text, ' ', '_')) AS tag
+FROM Posts
+
+Выберите 5 записей с самой высокой ценой из таблицы Houses.
+SELECT *
+FROM Houses
+ORDER BY price DESC
+LIMIT 5
+
+
+Ограничения таблицы
+Идентичность
