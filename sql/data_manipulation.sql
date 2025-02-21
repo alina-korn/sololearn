@@ -395,4 +395,40 @@ REFERENCES Accounts (id)
 
 Работа с данными
 Несколько таблиц
+Cгруппировать таблицу Houses по столбцу city и вычислить 
+среднюю цену домов для каждого города.
+SELECT city, AVG(price) AS mean_price
+FROM Houses
+GROUP BY city
 
+Столбец внешнего ключа не обязательно должен быть уникальным.
+
+Мы можем выбрать данные из нескольких таблиц, разделяя их запятыми 
+в операторе SELECT:
+SELECT firstname, lastname, city, number, type
+FROM Customers, PhoneNumbers
+WHERE Customer.id = PhoneNumber.customer_id
+
+Вы работаете с таблицами Products и Orders. У каждого продукта есть id, 
+в то время как в таблице Orders есть ссылочный product_id.
+Выбрать название из таблицы продуктов и соответствующую цену из таблицы 
+заказов.
+SELECT name, price
+FROM Products, Orders
+WHERE Products.id = Orders.product_id
+
+Работа с несколькими таблицами 
+При работе с несколькими таблицами обычно столбцы определяются по 
+полному имени – имя таблицы, за которым следует точка и имя столбца.
+
+Например: Customers.id - это столбец id таблицы Customers, в то время 
+как PhoneNumbers.id - это столбец id таблицы PhoneNumbers.
+
+Выбрать столбец возраста из таблицы Users, используя полное имя столбца.
+SELECT Users.age
+FROM Users
+
+Выводы урока 
+Выбор данных из нескольких таблиц прост!
+Просто разделите их имена в операторе SELECT запятой и укажите 
+условие для связанных столбцов.
