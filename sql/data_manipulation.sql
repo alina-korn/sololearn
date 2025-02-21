@@ -447,5 +447,74 @@ WHERE Authors.id = Books.author_id
 ORDER BY Authors.name ASC, Books.year ASC;
 
 
+JOIN
+Лучший способ объединения данных - это оператор JOIN.
+Он позволяет вам объединять множество таблиц на основе условия.
+SELECT firstname, lastname, city, number, type
+FROM Customers JOIN PhoneNumbers
+ON Customers.id = PhoneNumber.customer_id
 
+Oбъединить таблицы Пользователи и Счета и выводить имена Пользователей 
+и их номера счетов.
+SELECT Users.name, Account.number
+FROM Users JOIN Accounts
+ON Users.id = Accounts.user_id
 
+Возвращаются только записи, соответствующие условию объединения.
+SELECT Clients.name, Companies.name
+FROM Clients
+JOIN Companies
+ON Clients.company_id = Companies.id
+
+Псевдоним 
+Поскольку вы используете полные имена столбцов при объединении таблиц, 
+запрос может стать действительно длинным.
+Чтобы сделать его проще и короче, мы можем предоставить псевдонимы 
+для наших таблиц:
+SELECT C.firstname, C.lastname, C.city, PN.number, PN.type
+FROM Customers AS C JOIN PhoneNumbers AS PN
+ON C.id = PN.customer_id
+
+LEFT JOIN 
+Еще один тип JOIN - это LEFT JOIN.
+LEFT JOIN возвращает все строки из левой таблицы (первой таблицы), 
+даже если в правой таблице (второй таблице) нет совпадений. 
+Это означает, что если для условия ON в правой таблице нет совпадений, 
+оператор join все равно вернет строки из первой таблицы в результате.
+
+SELECT U.name, T.amount
+FROM Users AS U
+JOIN Transactions AS T
+ON U.id = T.userid
+
+SELECT C.firstname, C.lastname, C.city, PN.number, PN.type
+FROM Customers AS C LEFT JOIN PhoneNumbers AS PN
+ON C.id = PN.customer_id
+Если совпадение для определенной строки не найдено, для столбцов правой 
+таблицы возвращается NULL.
+
+SELECT A.id, B.id FROM 
+A LEFT JOIN B
+ON A.id = B.id
+Результат: 4 строки
+
+RIGHT JOIN 
+Аналогично, RIGHT JOIN возвращает все строки из правой таблицы, 
+даже если в левой таблице нет совпадений.
+Например, мы могли бы переписать предыдущий запрос таким образом:
+SELECT C.firstname, C.lastname, C.city, PN.number, PN.type
+FROM PhoneNumber AS PN RIGHT JOIN Customers AS C
+ON C.id = PN.customer_id
+ORDER BY C.id
+
+Если в левой таблице отсутствует соответствующая строка во время 
+правого соединения (RIGHT JOIN), столбцы левой таблицы будут содержать 
+значения NULL.
+
+Выводы из урока
+Операция JOIN позволяет вам объединять данные из нескольких таблиц 
+на основе условий.
+LEFT JOIN возвращает все строки из левой таблицы (первой таблицы), 
+даже если в правой таблице (второй таблице) нет совпадений.
+Аналогично, RIGHT JOIN возвращает все строки из правой таблицы, даже 
+если в левой таблице нет совпадений.
