@@ -691,3 +691,71 @@ WHERE
 SELECT * FROM book;
 
 ## Запросы на удаление
+DELETE FROM таблица;
+
+После того, как информация о книгах из таблицы supply перенесена в book , 
+необходимо очистить таблицу  supply
+DELETE FROM supply;
+SELECT * FROM supply;
+
+Удалить из таблицы supply все книги, названия которых есть в таблице book
+DELETE FROM supply 
+WHERE title IN (
+        SELECT title 
+        FROM book
+      );
+SELECT * FROM supply;
+
+Удалить из таблицы supply книги тех авторов, общее количество 
+экземпляров книг которых в таблице book превышает 10.
+DELETE FROM supply
+WHERE author IN (
+    SELECT author
+    FROM book
+    GROUP BY author
+    HAVING SUM(amount) > 10
+);
+
+## Запросы на создание таблицы
+CREATE TABLE имя_таблицы AS
+SELECT ...
+  
+Создать таблицу заказ (ordering), куда включить авторов и названия 
+тех книг, количество экземпляров которых в таблице book меньше 4. 
+Для всех книг указать одинаковое количество экземпляров 5.
+CREATE TABLE ordering AS
+SELECT author, title, 5 AS amount
+FROM book
+WHERE amount < 4;
+SELECT * FROM ordering;
+
+Создать таблицу заказ (ordering), куда включить авторов и названия тех книг, 
+количество экземпляров которых в таблице book меньше 4. Для всех книг указать 
+одинаковое значение - среднее количество экземпляров книг в таблице book.
+CREATE TABLE ordering AS
+SELECT author, title, 
+   (
+    SELECT ROUND(AVG(amount)) 
+    FROM book
+   ) AS amount
+FROM book
+WHERE amount < 4;
+SELECT * FROM ordering;
+
+Создать таблицу заказ (ordering), куда включить авторов и названия тех книг, 
+количество экземпляров которых в таблице book меньше среднего количества 
+экземпляров книг в таблице book. В таблицу включить столбец   amount, 
+в котором для всех книг указать одинаковое значение - среднее количество 
+экземпляров книг в таблице book.
+CREATE TABLE ordering AS
+SELECT 
+    author, 
+    title, 
+    (SELECT ROUND(AVG(amount)) FROM book) AS amount  -- Среднее количество экземпляров
+FROM book
+WHERE amount < (SELECT AVG(amount) FROM book);  -- Условие: количество меньше среднего
+
+-- Проверяем результат
+SELECT * FROM ordering;
+
+Тестирование таблицы https://stepik.org/lesson/305012/step/11?unit=287020
