@@ -268,7 +268,7 @@ ORDER BY title;
 
 https://stepik.org/lesson/297509/step/13?unit=279269 тренировка
 
-## Выбор уникальных элементов столбца
+## 1.3 Выбор уникальных элементов столбца
 DISTINCT - уникальные элементы некоторого столбца
 Выбрать различных авторов, книги которых хранятся в таблице book.
 SELECT DISTINCT author
@@ -444,3 +444,250 @@ ORDER BY
 
 Задание тестирование таблицы https://stepik.org/lesson/297515/step/9?unit=279275
 
+## 1.4 Вложенный запрос, возвращающий одно значение
+Вывести информацию о самых дешевых книгах, хранящихся на складе.
+SELECT title, author, price, amount
+FROM book
+WHERE price = (
+         SELECT MIN(price) 
+         FROM book
+      );
+
+Вывести информацию (автора, название и цену) о  книгах, цены которых 
+меньше или равны средней цене книг на складе. Информацию вывести в 
+отсортированном по убыванию цены виде. Среднее вычислить как среднее по цене книги.
+SELECT author, title, price
+FROM book
+WHERE price <= (SELECT AVG(price)
+               FROM book
+    )
+ORDER BY 
+    price DESC;
+
+## Использование вложенного запроса в выражении
+Вывести информацию о книгах, количество экземпляров которых отличается 
+от среднего количества экземпляров книг на складе более чем на 3.
+То есть нужно вывести и те книги, количество экземпляров которых 
+меньше среднего на 3, или больше среднего на 3.
+SELECT title, author, amount 
+FROM book
+WHERE ABS(amount - (SELECT AVG(amount) FROM book)) >3;
+
+Вывести информацию (автора, название и цену) о тех книгах, 
+цены которых превышают минимальную цену книги на складе не 
+более чем на 150 рублей в отсортированном по возрастанию цены виде
+SELECT author, title,  price
+FROM book
+WHERE price <= (SELECT MIN(price) FROM book) +150 
+ORDER BY price ASC
+
+## Вложенный запрос, оператор IN
+WHERE имя_столбца IN (вложенный запрос, возвращающий один столбец)
+
+Вывести информацию о книгах тех авторов, общее количество экземпляров 
+книг которых не менее 12.
+SELECT title, author, amount, price
+FROM book
+WHERE author IN (
+        SELECT author 
+        FROM book 
+        GROUP BY author 
+        HAVING SUM(amount) >= 12
+      );
+
+Вывести информацию (автора, книгу и количество) о тех книгах, количество 
+экземпляров которых в таблице book не дублируется.
+SELECT author, title, amount
+FROM book
+WHERE amount IN (SELECT amount
+FROM book
+GROUP BY AMOUNT HAVING COUNT(amount) = 1);
+
+## Вложенный запрос, операторы ANY и ALL
+Вывести информацию о тех книгах, количество которых меньше самого 
+маленького среднего количества книг каждого автора.
+SELECT title, author, amount, price
+FROM book
+WHERE amount < ALL (
+        SELECT AVG(amount) 
+        FROM book 
+        GROUP BY author 
+      );
+
+Вывести информацию о тех книгах, количество которых меньше самого 
+большого среднего количества книг каждого автора.
+SELECT title, author, amount, price
+FROM book
+WHERE amount < ANY (
+        SELECT AVG(amount) 
+        FROM book 
+        GROUP BY author 
+      );
+
+Вывести информацию о книгах(автор, название, цена), цена которых 
+меньше самой большой из минимальных цен, вычисленных для каждого автора.
+SELECT author, title, price
+FROM book 
+WHERE price < (
+    SELECT MAX(min_price)
+    FROM (
+        SELECT MIN(PRICE) AS min_price
+        FROM book
+        GROUP BY author) as min_price);
+
+## Вложенный запрос после SELECT
+Вывести информацию о книгах, количество экземпляров которых отличается 
+от среднего количества экземпляров книг на складе более чем на 3,  
+а также указать среднее значение количества экземпляров книг.
+SELECT title, author, amount, 
+    (
+     SELECT AVG(amount) 
+     FROM book
+    ) AS Среднее_количество 
+FROM book
+WHERE abs(amount - (SELECT AVG(amount) FROM book)) >3;
+
+SELECT title, author, amount, 
+      FLOOR((SELECT AVG(amount) FROM book)) AS Среднее_количество 
+FROM book
+WHERE ABS(amount - (SELECT AVG(amount) FROM book)) >3;
+
+Посчитать сколько и каких экземпляров книг нужно заказать поставщикам, 
+чтобы на складе стало одинаковое количество экземпляров каждой книги, 
+равное значению самого большего количества экземпляров одной книги на складе. 
+Вывести название книги, ее автора, текущее количество экземпляров на складе 
+и количество заказываемых экземпляров книг. Последнему столбцу присвоить 
+имя Заказ. В результат не включать книги, которые заказывать не нужно.
+SELECT 
+    title, 
+    author, 
+    amount,
+    (SELECT MAX(amount) FROM book) - amount AS Заказ
+FROM book
+WHERE amount < (SELECT MAX(amount) FROM book);
+
+Тренировка https://stepik.org/lesson/297514/step/7?unit=279274
+
+## 1.5 Создание пустой таблицы
+CREATE TABLE supply(
+    supply_id INT PRIMARY KEY AUTO_INCREMENT, 
+    title VARCHAR(50),
+    author VARCHAR(30),
+    price DECIMAL(8, 2),
+    amount INT  
+)
+
+# Добавление записей в таблицу
+INSERT INTO book (title, author, price, amount) 
+VALUES 
+    ('Война и мир','Толстой Л.Н.', 1070.20, 2),
+    ('Анна Каренина', 'Толстой Л.Н.', 599.90, 3);
+
+# Добавление записей из другой таблицы
+Занести все книги из таблицы supply в таблицу book
+INSERT INTO book (title, author, price, amount) 
+SELECT title, author, price, amount 
+FROM supply;
+
+SELECT * FROM book;
+
+Добавить из таблицы supply в таблицу book, все книги, 
+кроме книг, написанных Булгаковым М.А. и Достоевским Ф.М.
+INSERT INTO book (title, author, price, amount) 
+SELECT title, author, price, amount 
+FROM supply
+WHERE author != 'Булгаков М.А.' and author != 'Достоевский Ф.М.';
+
+SELECT * FROM book;
+
+# Добавление записей, вложенные запросы
+Занести из таблицы supply в таблицу book только те книги, 
+названия которых отсутствуют в таблице book
+INSERT INTO book (title, author, price, amount) 
+SELECT title, author, price, amount 
+FROM supply
+WHERE title NOT IN (
+        SELECT title 
+        FROM book
+      );
+SELECT * FROM book;
+
+# Запросы на обновление
+UPDATE таблица SET поле = выражение
+где 
+таблица – имя таблицы, в которой будут проводиться изменения;
+поле – поле таблицы, в которое будет внесено изменение;
+выражение – выражение,  значение которого будет занесено в поле.
+
+Пример
+Уменьшить на 30% цену книг в таблице book
+UPDATE book 
+SET price = 0.7 * price;
+SELECT * FROM book;
+
+Уменьшить на 30% цену тех книг в таблице book, количество которых меньше 5.
+UPDATE book 
+SET price = 0.7 * price 
+WHERE amount < 5;
+SELECT * FROM book;
+
+Уменьшить на 10% цену тех книг в таблице book, количество которых 
+принадлежит интервалу от 5 до 10, включая границы.
+UPDATE book
+SET price = 0.9 * price
+WHERE amount BETWEEN 5 AND 10
+
+UPDATE book
+SET price = price * 0.85
+WHERE amount BETWEEN 10 AND 20;
+
+## Запросы на обновление нескольких столбцов
+Запросом UPDATE можно обновлять значения нескольких столбцов одновременно. 
+В этом случае простейший запрос будет выглядеть так:
+UPDATE таблица SET поле1 = выражение1, поле2 = выражение2
+
+В столбце buy покупатель указывает количество книг, которые он хочет 
+приобрести. Для каждой книги, выбранной покупателем, необходимо 
+уменьшить ее количество на складе на указанное в столбцеbuy количество, 
+а в столбец buy занести 0.
+Запрос:
+UPDATE book 
+SET amount = amount - buy,
+    buy = 0;
+SELECT * FROM book;
+
+В таблице book необходимо скорректировать значение для покупателя 
+в столбце buy таким образом, чтобы оно не превышало количество 
+экземпляров книг, указанных в столбце amount. А цену тех книг, 
+которые покупатель не заказывал, снизить на 10%.
+UPDATE book
+SET 
+    buy = IF(buy > amount, amount, buy),
+    price = IF(buy = 0, price * 0.9, price);
+
+## Запросы на обновление нескольких таблиц
+Если в таблице supply  есть те же книги, что и в таблице book, 
+добавлять эти книги в таблицу book не имеет смысла. Необходимо 
+увеличить их количество на значение столбца amountтаблицы supply
+UPDATE book, supply 
+SET book.amount = book.amount + supply.amount
+WHERE book.title = supply.title AND book.author = supply.author;
+SELECT * FROM book;
+
+Для тех книг в таблице book , которые есть в таблице supply, 
+не только увеличить их количество в таблице book ( увеличить их 
+количество на значение столбца amount таблицы supply), но и 
+пересчитать их цену (для каждой книги найти сумму цен из таблиц 
+book и supply и разделить на 2).
+UPDATE book, supply
+SET 
+    book.amount = book.amount + supply.amount,  -- Увеличиваем количество
+    book.price = (book.price + supply.price) / 2  -- Пересчитываем цену
+WHERE 
+    book.title = supply.title  -- Условие по названию
+    AND book.author = supply.author;  -- Условие по автору
+
+-- Проверяем результат
+SELECT * FROM book;
+
+## Запросы на удаление
