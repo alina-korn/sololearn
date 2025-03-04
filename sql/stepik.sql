@@ -976,3 +976,107 @@ SET
     f.sum_fine = f.sum_fine * 2  -- Увеличиваем сумму штрафа в два раза
 WHERE 
     f.date_payment IS NULL;
+
+Водители оплачивают свои штрафы. В таблице payment занесены даты их оплаты
+Необходимо:
+
+в таблицу fine занести дату оплаты соответствующего штрафа из таблицы payment; 
+уменьшить начисленный штраф в таблице fine в два раза  (только для тех штрафов,
+информация о которых занесена в таблицу payment) , если оплата произведена не 
+позднее 20 дней со дня нарушения.
+UPDATE 
+    fine f
+JOIN 
+    payment p
+ON 
+    f.name = p.name
+    AND f.number_plate = p.number_plate
+    AND f.violation = p.violation
+    AND f.date_violation = p.date_violation
+SET 
+    f.date_payment = p.date_payment,  -- Обновляем дату оплаты
+    f.sum_fine = IF(
+        DATEDIFF(p.date_payment, p.date_violation) <= 20,  -- Если оплата в течение 20 дней
+        f.sum_fine / 2,  -- Уменьшаем штраф в два раза
+        f.sum_fine  -- Иначе оставляем штраф без изменений
+    );
+
+Создать новую таблицу back_payment, куда внести информацию о неоплаченных 
+штрафах (Фамилию и инициалы водителя, номер машины, нарушение, сумму 
+штрафа  и  дату нарушения) из таблицы fine.
+CREATE TABLE back_payment AS
+SELECT 
+    name, 
+    number_plate, 
+    violation, 
+    sum_fine, 
+    date_violation
+FROM fine
+WHERE date_payment IS NULL;  -- Выбираем только неоплаченные штрафы
+
+Удалить из таблицы fine информацию о нарушениях, совершенных 
+раньше 1 февраля 2020 года. 
+DELETE FROM fine
+WHERE date_violation < '2020-02-01';  -- Удаляем записи, где дата нарушения раньше 1 февраля 2020 года
+
+
+## 2.1 Связи между таблицами
+## Создать таблицу author следующей структуры:
+CREATE TABLE author (
+    author_id INT PRIMARY KEY AUTO_INCREMENT,  -- Уникальный идентификатор автора
+    name_author VARCHAR(50)  -- Имя автора (строка длиной до 50 символов)
+);
+
+Заполнить таблицу author. В нее включить следующих авторов:
+Булгаков М.А.
+Достоевский Ф.М.
+Есенин С.А.
+Пастернак Б.Л.
+INSERT INTO author (name_author)
+VALUES 
+    ('Булгаков М.А.'),
+    ('Достоевский Ф.М.'),
+    ('Есенин С.А.'),
+    ('Пастернак Б.Л.');
+
+## Создание таблицы с внешними ключами
+Перепишите запрос на создание таблицы book , чтобы ее структура 
+соответствовала структуре, показанной на логической схеме (таблица 
+genre уже создана, порядок следования столбцов - как на логической 
+схеме в таблице book, genre_id  - внешний ключ) . Для genre_id 
+ограничение о недопустимости пустых значений не задавать. 
+CREATE TABLE book (
+    book_id INT PRIMARY KEY AUTO_INCREMENT,  -- Уникальный идентификатор книги
+    title VARCHAR(50),  -- Название книги
+    author_id INT NOT NULL,  -- Идентификатор автора (внешний ключ)
+    genre_id INT,  -- Идентификатор жанра (внешний ключ)
+    price DECIMAL(8, 2),  -- Цена книги
+    amount INT,  -- Количество экземпляров
+    FOREIGN KEY (author_id) REFERENCES author (author_id),  -- Внешний ключ на таблицу author
+    FOREIGN KEY (genre_id) REFERENCES genre (genre_id)  -- Внешний ключ на таблицу genre
+);
+
+## Действия при удалении записи главной таблицы
+Создать таблицу book той же структуры, что и на предыдущем шаге. 
+Будем считать, что при удалении автора из таблицы author, должны 
+удаляться все записи о книгах из таблицы book, написанные этим 
+автором. А при удалении жанра из таблицы genre для соответствующей 
+записи book установить значение Null в столбце genre_id. 
+CREATE TABLE book (
+    book_id INT PRIMARY KEY AUTO_INCREMENT,  -- Уникальный идентификатор книги
+    title VARCHAR(50),  -- Название книги
+    author_id INT NOT NULL,  -- Идентификатор автора (внешний ключ)
+    genre_id INT,  -- Идентификатор жанра (внешний ключ)
+    price DECIMAL(8, 2),  -- Цена книги
+    amount INT,  -- Количество экземпляров
+    FOREIGN KEY (author_id) REFERENCES author (author_id) ON DELETE CASCADE,  -- Каскадное удаление при удалении автора
+    FOREIGN KEY (genre_id) REFERENCES genre (genre_id) ON DELETE SET NULL  -- Установка NULL при удалении жанра
+);
+
+Добавьте три последние записи (с ключевыми значениями 6, 7, 8) в 
+таблицу book, первые 5 записей уже добавлены:
+INSERT INTO book (book_id, title, author_id, genre_id, price, amount)
+VALUES 
+    (6, 'Стихотворения и поэмы', 3, 2, 650.00, 15),
+    (7, 'Черный человек', 3, 2, 570.20, 6),
+    (8, 'Лирика', 4, 2, 518.99, 2);
