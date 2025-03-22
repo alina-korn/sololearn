@@ -76,3 +76,37 @@ console.log(msg);
 
 ⭐ Вы можете получить доступ к значению, сохраненному в переменной, вызвав его имя
 ⭐ Переназначение переменной приведет к тому, что переменная забудет ранее сохраненное значение
+
+
+<p id="p1">Paragraph text</p>
+document.getElementById("intro")
+
+
+<h2 id="e1">Heading</h2>
+<p id="e2">Text</p>
+
+<script>
+document.getElementById("e1");
+</script>
+
+
+<p id="t1">Text1</p>
+
+<script>
+document.getElementById("t1").textContent;
+</script>
+
+
+<p id="p1">Text A</p>
+<p id="p2">Text B</p>
+
+<script>
+let x1 = document.getElementById("p1").textContent;
+let x2 = document.getElementById("p2").textContent;
+</script>
+
+⭐ DOM обрабатывает структуру веб-страницы как дерево
+
+⭐ Чтобы получить информацию от элемента и изменить его, сначала вам нужно получить к нему доступ
+
+⭐ Хранение информации элемента в переменной - удобный способ ссылаться на нее позже в вашем скрипте
